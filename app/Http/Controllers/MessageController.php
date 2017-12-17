@@ -138,6 +138,7 @@ class MessageController extends Controller
                 $update = [
                     'landline' => true,
                     'request_id' => $request_id,
+                    'sent_at' => Carbon::now(),
                 ];
             } else {
                 $update = [
