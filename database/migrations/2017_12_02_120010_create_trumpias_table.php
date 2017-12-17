@@ -15,7 +15,7 @@ class CreateTrumpiasTable extends Migration
     {
         Schema::create('trumpia', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('project')->default('');
+            $table->integer('token_id')->unsigned()->default(0);
             $table->string('request_id')->default('');
             $table->string('type')->default('');
             $table->string('message')->default('');
