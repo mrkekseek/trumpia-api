@@ -27,6 +27,7 @@ class CreateReceiversTable extends Migration
             $table->tinyInteger('finish')->unsigned()->default(0);
             $table->tinyInteger('success')->unsigned()->default(0);
             $table->text('message');
+            $table->timestamp('sent_at');
             $table->timestamps();
         });
     }

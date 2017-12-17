@@ -15,11 +15,11 @@ class MessageController extends Controller
 {
     protected $sendFrom = 9;
     protected $sendTo = 21;
-    protected $resendAfter = 24;
+    protected $blockHours = 24;
 
     public function send(MessageSendRequest $request, $landline = false)
     {
-        $data = $request->only(['type', 'clients', 'message', 'company', 'attachment']);
+        $data = $request->only(['type', 'clients', 'message', 'company', 'attachment', 'max', 'block']);
 
         $company = Company::findByName($data['company']);
         if (empty($company)) {
@@ -39,8 +39,7 @@ class MessageController extends Controller
         }
 
         $hour = Carbon::now()->hour;
-        $hour = 10;
-        if ($hour <= $this->sendFrom || $hour > $this->sendTo) {
+        if ( ! empty($data['block']) && ($hour <= $this->sendFrom || $hour > $this->sendTo)) {
             return response()->error('Message sending is forbidden till '.$this->sendFrom.' AM', 409);
         }
 
@@ -66,6 +65,10 @@ class MessageController extends Controller
                     $request_id = $response['data']['request_id'];
                     if ($response['code'] != 200) {
                         $phones[$client['phone']] = $response['message'];
+                    } else {
+                        if ($this->blockPhone($client['phone'])) {
+                           $phones[$client['phone']] = __('For the last '.$this->blockHours.' hours this phone number already received a text'); 
+                        }
                     }
                 } else {
                     $phones[$client['phone']] = __('Message is too long');
@@ -80,7 +83,12 @@ class MessageController extends Controller
         return response()->success($phones);
     }
 
-    public function create($data, $attachment)
+    private function blockPhone($phone)
+    {
+        return Receiver::wasSent($phone, $this->blockHours);
+    }
+
+    private function create($data, $attachment)
     {
         $message = [
             'phones' => count($data['clients']),
@@ -93,7 +101,7 @@ class MessageController extends Controller
         return Message::create($message);
     }
 
-    public function receiver($message_id, $company, $data, $text, $attachment, $message, $request_id)
+    private function receiver($message_id, $company, $data, $text, $attachment, $message, $request_id)
     {
         $receiver = [
             'message_id' => $message_id,
@@ -106,6 +114,7 @@ class MessageController extends Controller
             'attachment' => $attachment,
             'finish' => empty($request_id),
             'message' => $message,
+            'sent_at' => Carbon::now(),
         ];
 
         return Receiver::create($receiver);
