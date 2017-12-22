@@ -14,7 +14,7 @@ class CompanyController extends Controller
     {
         $this->sync();
 
-        $name = $request->only(['name']);
+        $name = $request->name;
         $company = Company::findByName($name);
         if ( ! empty($company)) {
             return response()->success($company->status);
