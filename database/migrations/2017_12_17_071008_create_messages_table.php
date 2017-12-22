@@ -17,6 +17,7 @@ class CreateMessagesTable extends Migration
             $table->increments('id');
             $table->smallInteger('phones')->unsigned()->default(0);
             $table->string('type');
+            $table->integer('target_id')->unsigned()->default(0);
             $table->text('text');
             $table->string('company');
             $table->text('attachment');

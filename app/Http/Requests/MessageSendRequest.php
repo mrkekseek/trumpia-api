@@ -25,6 +25,7 @@ class MessageSendRequest extends FormRequest
     {
         return [
             'type' => 'required',
+            'target_id' => 'required',
             'clients' => 'required',
             'message' => 'required',
             'company' => 'required',
