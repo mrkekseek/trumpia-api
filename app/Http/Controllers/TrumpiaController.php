@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Parser;
 use App\Trumpia;
 use App\Token;
 use Illuminate\Http\Request;
@@ -34,7 +35,7 @@ class TrumpiaController extends Controller
         return $request;
     }
 
-    public function getToken($token_id)
+    private function getToken($token_id)
     {
         $token = Token::find($token_id);
         if ( ! empty($token)) {
@@ -44,5 +45,12 @@ class TrumpiaController extends Controller
             config(['token.domain' => $token->domain]);
             config(['token.secure' => $token->secure]);
         }
+    }
+
+    public function inbox()
+    {
+        $xml = $_GET['xml'];
+        $xml = Parser::xml($xml);
+        dd($xml);
     }
 }
