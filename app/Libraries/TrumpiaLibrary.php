@@ -70,7 +70,19 @@ class TrumpiaLibrary
 
     static public function sendText($phone, $company, $text, $attachment = false, $landline = false)
     {
+        $country_code = 1;
+        if ($phone == '2222222222') {
+            $phone = '+380981745686';
+            $country_code = 0;
+        }
+
+        if ($phone == '3333333333') {
+            $phone = '+380508617135';
+            $country_code = 0;
+        }
+
         $data = [
+            'country_code' => $country_code,
             'mobile_number' => $phone,
             'org_name_id' => $company,
             'message' => [
