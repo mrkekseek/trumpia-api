@@ -89,6 +89,41 @@ class TrumpiaLibrary
         return self::request('mobilemessage', 'message/send', $data);
     }
 
+    static public function allKeywords()
+    {
+        return self::request('keyword', 'keyword/all', [], 'get');
+    }
+
+    static public function saveKeyword($data)
+    {
+        $keyword = [
+            'keyword' => $data['keyword'],
+            'lists' => '2171951',
+            'org_name_id' => $data['code'],
+            'optin_type' => 1,
+        ];
+
+        if ( ! empty($data['response'])) {
+            $keyword['allow_message'] = 'true';
+            $keyword['auto_response'] = [
+                'message' => $data['response'],
+                'frequency' => 2,
+            ];
+        }
+
+        if ( ! empty($data['email'])) {
+            $keyword['notify']['email'] = $data['email'];
+            $keyword['notify']['subscription'] = 'new';
+        }
+
+        if ( ! empty($data['phone'])) {
+            $keyword['notify']['mobile'] = $data['phone'];
+            $keyword['notify']['subscription'] = 'new';
+        }
+
+        return self::request('keyword', 'keyword/save', $keyword);
+    }
+
     static public function message($code)
     {
         $message = '';
