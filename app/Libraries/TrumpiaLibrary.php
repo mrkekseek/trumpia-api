@@ -30,10 +30,10 @@ class TrumpiaLibrary
             $error = self::message($response['status_code']);
         }
 
-        if ( ! empty($response['request_id'])) {
+        /*if ( ! empty($response['request_id'])) {*/
             $data = [
                 'token_id' => config('token.id'),
-                'request_id' => $response['request_id'],
+                'request_id' => ! empty($response['request_id']) ? $response['request_id'] : '',
                 'type' => $type,
                 'message' => $error,
                 'data' => $data,
@@ -41,7 +41,7 @@ class TrumpiaLibrary
                 'push' => [],
             ];
             $trumpia = Trumpia::create($data);
-        }
+        /*}*/
         
         return [
             'code' => $code,
