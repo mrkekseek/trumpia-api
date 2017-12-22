@@ -34,5 +34,12 @@ class TokensSeeder extends Seeder
             'domain' => 'ct.da',
             'secure' => 0,
         ]);
+
+        DB::table('tokens')->insert([
+            'token' => '$2y$10$hBYMT3gYolARvwHUf4q4NuTkwcNLpwZHR3VF4nF3esfjcqIg7rHfO',
+            'project' => 'ContractorTexter',
+            'domain' => '34.214.246.59',
+            'secure' => 0,
+        ]);
     }
 }

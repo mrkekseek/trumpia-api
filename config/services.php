@@ -38,6 +38,7 @@ return [
     'trumpia' => [
         'url' => 'http://api.trumpia.com/rest/v1/medicalreputation./',
         'key' => 'd3896dd868b6bd5b401bd8fdb6af978f',
+        'landline' => '8886186710',
     ],
 
 ];

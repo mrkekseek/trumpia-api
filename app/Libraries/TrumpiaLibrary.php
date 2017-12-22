@@ -15,13 +15,15 @@ class TrumpiaLibrary
                 'Content-Type' => 'application/json',
                 'X-Apikey' => config('services.trumpia.key'),
             ],
-            'form_params' => $data
+            'http_errors' => false,
+            'json' => $data,
         ]);
+
         $json = json_decode($response->getBody(), true);
-        return $method == 'get' ? $json : self::response($type, $data, $json);
+        return $method == 'get' ? $json : self::response($type, $data, $json, $response->getStatusCode());
     }
 
-    static private function response($type, $data, $response)
+    static private function response($type, $data, $response, $code)
     {
         $error = '';
         if ( ! empty($response['status_code'])) {
@@ -29,25 +31,23 @@ class TrumpiaLibrary
         }
 
         if ( ! empty($response['request_id'])) {
-            $trumpia = new Trumpia();
-            $trumpia->project = config('token.project');
-            $trumpia->request_id = $response['request_id'];
-            $trumpia->type = $type;
-            $trumpia->message = $error;
-            $trumpia->data = $data;
-            $trumpia->response = $response;
-            $trumpia->push = [];
-            $trumpia->save();
+            $data = [
+                'token_id' => config('token.id'),
+                'request_id' => $response['request_id'],
+                'type' => $type,
+                'message' => $error,
+                'data' => $data,
+                'response' => $response,
+                'push' => [],
+            ];
+            $trumpia = Trumpia::create($data);
         }
         
-        if ( ! empty($response['status_code']) && $response['status_code'] == 'MPCE0000' || empty($response['status_code'])) {
-            return $data;
-        } else {
-            return [
-                'code' => $response['status_code'],
-                'error' => $error,
-            ];
-        }
+        return [
+            'code' => $code,
+            'message' => $error,
+            'data' => $response,
+        ];
     }
 
     static public function allCompanies()
@@ -66,6 +66,27 @@ class TrumpiaLibrary
     static public function removeCompany($code)
     {
         return self::request('orgname/'.$code, 'company/remove', [], 'delete');
+    }
+
+    static public function sendText($phone, $company, $text, $attachment = false, $landline = false)
+    {
+        $data = [
+            'mobile_number' => $phone,
+            'org_name_id' => $company,
+            'message' => [
+                'text' => $text,
+            ],
+        ];
+
+        if ( ! empty($attachment)) {
+            $data['message']['media'] = $attachment;
+        }
+
+        if ( ! empty($landline)) {
+            $data['sender'] = config('services.trumpia.landline');
+        }
+
+        return self::request('mobilemessage', 'message/send', $data);
     }
 
     static public function message($code)
@@ -283,6 +304,33 @@ class TrumpiaLibrary
             // Status Report
             case 'MPRE2301': $message = 'The request_id provided is incorrect.'; break;
             case 'MPCE4001': $message = 'The request is still in progress. Please wait a few seconds.'; break;
+        }
+
+        return $message;
+    }
+
+    static public function report($code)
+    {
+        $message = '';
+        switch ($code) {
+            case 'DR000': $message = 'Message successfully delivered to the carrier.'; break;
+            case 'DR001': $message = 'The mobile number has opted-out of future messages.'; break;
+            case 'DR002': $message = 'The gateway is not routing messages to this network prefix.'; break;
+            case 'DR003': $message = 'The mobile number has been deactivated by carrier due to cancellation or migration to another carrier.'; break;
+            case 'DR004': $message = 'There was an error attempting to deliver the message to this subscriber\'s carrier.'; break;
+            case 'DR005': $message = 'The messaging gateway failed to deliver the message to the phone provided.'; break;
+            case 'DR006': $message = 'The mobile number is invalid and cannot receive messages. Do not retry.'; break;
+            case 'DR007': $message = 'The SMS component of the message is greater than the allowed 160 characters or 70 Unicode characters.'; break;
+            case 'DR008': $message = 'The message expired and was not delivered to the subscriber.'; break;
+            case 'DR009': $message = 'The carrier rejected the message. This can be due to short code messaging blocked, anti-spam policies, or their wireless plan.'; break;
+            case 'DR010': $message = 'The message was not sent due to a temporary system error. If it persists, please contact us.'; break;
+            case 'DR011': $message = 'The message was accepted by the carrier, but has failed due to unknown reasons.'; break;
+            case 'DR012': $message = 'An unknown carrier error has prevented the message from being delivered successfully.'; break;
+            case 'DR013': $message = 'The mobile number does not support text messages.'; break;
+            case 'DR014': $message = 'Due to TCPA regulations, subscribers may not be contacted after 9PM and before 8AM, local time.'; break;
+            case 'DR015': $message = 'SMS could not be delivered due to a phone error. For example, the phone does not support SMS or is illegally registered on the network.'; break;
+            case 'DR016': $message = 'SMS could not be delivered due to a temporary phone issue. For example, the phone is low on memory or is turned off.'; break;
+            case 'DR017': $message = 'Unknown reason.'; break;
         }
 
         return $message;

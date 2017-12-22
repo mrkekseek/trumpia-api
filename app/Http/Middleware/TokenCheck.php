@@ -21,6 +21,7 @@ class TokenCheck
             return response()->error('Unauthenticated', 401);
         }
         
+        config(['token.id' => $token->id]);
         config(['token.token' => $token->token]);
         config(['token.project' => $token->project]);
         config(['token.domain' => $token->domain]);
