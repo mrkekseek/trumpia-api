@@ -58,6 +58,10 @@ class MessageController extends Controller
                 $text = str_replace('[$LastName]', $client['lastname'], $text);
             }
 
+            if ( ! empty($client['link'])) {
+                $text = str_replace('[$Link]', $client['link'], $text);
+            }
+
             $request_id = '';
             if (TV::phone($client['phone'])) {
                 if (TV::messageLength($text, $data['company'], ! empty($data['max']) ? $data['max'] : null)) {
