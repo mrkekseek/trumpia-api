@@ -19,9 +19,9 @@ class CreateTrumpiasTable extends Migration
             $table->string('request_id')->default('');
             $table->string('type')->default('');
             $table->string('message')->default('');
-            $table->json('data');
-            $table->json('response');
-            $table->json('push');
+            $table->json('data')->nullable();
+            $table->json('response')->nullable();
+            $table->json('push')->nullable();
             $table->timestamps();
         });
     }
