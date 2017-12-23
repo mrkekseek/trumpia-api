@@ -40,7 +40,7 @@ class MessageController extends Controller
         }
 
         $hour = Carbon::now()->hour;
-        if ( ! empty($data['block']) && ($hour <= $this->sendFrom || $hour > $this->sendTo)) {
+        if ( ! empty($data['block']) && ($hour < $this->sendFrom || $hour >= $this->sendTo)) {
             return response()->error('Message sending is forbidden till '.$this->sendFrom.' AM', 409);
         }
 
