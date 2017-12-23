@@ -36,7 +36,7 @@ class TokenCheck
         config(['token.project' => $token->project]);
         config(['token.domain' => $token->domain]);
         config(['token.secure' => $token->secure]);
-
+        
         return $next($request);
     }
 }

@@ -25,7 +25,6 @@ class TrumpiaLibrary
 
     static private function response($type, $data, $response, $code)
     {
-        $error = '';
         if ( ! empty($response['status_code'])) {
             $error = self::message($response['status_code']);
         }

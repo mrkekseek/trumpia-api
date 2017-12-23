@@ -71,9 +71,9 @@ class MessageController extends Controller
             if (TV::phone($client['phone'])) {
                 if (TV::messageLength($text, $data['company'], ! empty($data['max']) ? $data['max'] : null)) {
                     if ($this->blockPhone($client['phone'])) {
-                        $phones[$client['phone']] = __('For the last '.$this->blockHours.' hours this phone number already received a text'); 
+                        $phones[$client['phone']]['message'] = __('For the last '.$this->blockHours.' hours this phone number already received a text'); 
                     } else {
-                        $response = Trumpia::sendText($client['phone'], $company->code, $text, $attachment);
+                        $response = Trumpia::sendText($client['phone'], $company->code, ' '.$text, $attachment);
                         $request_id = $response['data']['request_id'];
                         if ($response['code'] != 200) {
                             $phones[$client['phone']]['message'] = $response['message'];
@@ -120,8 +120,9 @@ class MessageController extends Controller
             'message_id' => $message_id,
             'request_id' => $request_id,
             'phone' => $data['phone'],
-            'firstname' => $data['firstname'],
-            'lastname' => $data['lastname'],
+            'firstname' => ! empty($data['firstname']) ? $data['firstname'] : '',
+            'lastname' => ! empty($data['lastname']) ? $data['lastname'] : '',
+            'link' => ! empty($data['link']) ? $data['link'] : '',
             'text' => $text,
             'company' => $company,
             'attachment' => $attachment,

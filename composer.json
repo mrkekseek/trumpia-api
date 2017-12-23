@@ -7,13 +7,10 @@
     "require": {
         "php": ">=7.0.0",
         "fideloper/proxy": "~3.3",
-        "guzzle/guzzle": "~3.0",
         "guzzlehttp/guzzle": "^6.3",
         "laravel/framework": "5.5.*",
-        "laravel/passport": "^4.0",
         "laravel/tinker": "~1.0",
-        "nathanmac/Parser": "^4.3",
-        "orchestra/parser": "~3.0"
+        "nathanmac/Parser": "^4.3"
     },
     "require-dev": {
         "filp/whoops": "~2.0",
