@@ -73,13 +73,14 @@ class MessageController extends Controller
                 if (TV::messageLength($text, $data['company'], ! empty($data['max']) ? $data['max'] : null)) {
                     if ($this->blockPhone($client['phone'])) {
                         $phones[$client['phone']]['message'] = __('For the last '.$this->blockHours.' hours this phone number already received a text'); 
+                        $phones[$client['phone']]['finish'] = 1;
                     } else {
                         $response = Trumpia::sendText($client['phone'], $company->code, ' '.$text, $attachment);
                         $request_id = $response['data']['request_id'];
                         if ($response['code'] != 200) {
                             $phones[$client['phone']]['message'] = $response['message'];
                             $phones[$client['phone']]['finish'] = 1;
-                        }   
+                        }
                     }
                 } else {
                     $phones[$client['phone']]['message'] = __('Message is too long');
@@ -147,7 +148,7 @@ class MessageController extends Controller
             ];
         } else {
             if (empty($receiver->landline)) {
-                $response = Trumpia::sendText($receiver->phone, $receiver->company, $receiver->text, $receiver->attachment, true);
+                $response = Trumpia::sendText($receiver->phone, $receiver->company, $this->landlineText($receiver->text, $receiver->company), $receiver->attachment, true);
                 $request_id = $response['data']['request_id'];
 
                 $update = [
@@ -172,6 +173,12 @@ class MessageController extends Controller
 
         $receiver->update($update);
         $this->response($receiver->message_id);
+    }
+
+    private function landlineText($text, $code)
+    {
+        $company = Company::whrere('code', $code)->first();
+        return $company->name.': '.$text;
     }
 
     private function response($message_id)
