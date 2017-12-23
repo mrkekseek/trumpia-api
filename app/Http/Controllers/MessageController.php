@@ -178,10 +178,7 @@ class MessageController extends Controller
         $message = Message::find($message_id);
         $receivers = Receiver::allFinished($message_id);
         if (count($receivers) == $message->phones) {
-            ResponseLibrary::send('seance/push', [
-                'id' => $message->target_id,
-                'clients' => $receivers,
-            ]);
+            ResponseLibrary::send($message->type.'/push/'.$message->target_id, $receivers);
         }
     }
 }
