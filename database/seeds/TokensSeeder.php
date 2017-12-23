@@ -36,7 +36,7 @@ class TokensSeeder extends Seeder
         ]);
 
         DB::table('tokens')->insert([
-            'token' => '$2y$10$hBYMT3gYolARvwHUf4q4NuTkwcNLpwZHR3VF4nF3esfjcqIg7rHfO',
+            'token' => '$2y$10$hBYMT3gYolARvwHUf4q4NuTkwcNLpwZHR3VF4nF3esfjcqIg7rHf1',
             'project' => 'ContractorTexter',
             'domain' => '34.214.246.59',
             'secure' => 0,
