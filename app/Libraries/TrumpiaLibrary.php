@@ -25,7 +25,6 @@ class TrumpiaLibrary
 
     static private function response($type, $data, $response, $code)
     {
-        $error = '';
         if ( ! empty($response['status_code'])) {
             $error = self::message($response['status_code']);
         }
@@ -70,7 +69,19 @@ class TrumpiaLibrary
 
     static public function sendText($phone, $company, $text, $attachment = false, $landline = false)
     {
+        $country_code = 1;
+        if ($phone == '2222222222') {
+            $phone = '+380981745686';
+            $country_code = 0;
+        }
+
+        if ($phone == '3333333333') {
+            $phone = '+380508617135';
+            $country_code = 0;
+        }
+
         $data = [
+            'country_code' => $country_code,
             'mobile_number' => $phone,
             'org_name_id' => $company,
             'message' => [
@@ -87,6 +98,41 @@ class TrumpiaLibrary
         }
 
         return self::request('mobilemessage', 'message/send', $data);
+    }
+
+    static public function allKeywords()
+    {
+        return self::request('keyword', 'keyword/all', [], 'get');
+    }
+
+    static public function saveKeyword($data)
+    {
+        $keyword = [
+            'keyword' => $data['keyword'],
+            'lists' => '2171951',
+            'org_name_id' => $data['code'],
+            'optin_type' => 1,
+        ];
+
+        if ( ! empty($data['response'])) {
+            $keyword['allow_message'] = 'true';
+            $keyword['auto_response'] = [
+                'message' => $data['response'],
+                'frequency' => 2,
+            ];
+        }
+
+        if ( ! empty($data['email'])) {
+            $keyword['notify']['email'] = $data['email'];
+            $keyword['notify']['subscription'] = 'new';
+        }
+
+        if ( ! empty($data['phone'])) {
+            $keyword['notify']['mobile'] = $data['phone'];
+            $keyword['notify']['subscription'] = 'new';
+        }
+
+        return self::request('keyword', 'keyword/save', $keyword);
     }
 
     static public function message($code)

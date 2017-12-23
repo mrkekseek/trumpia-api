@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use App\Http\Requests\ApiRequest;
 
-class MessageSendRequest extends ApiRequest
+class KeywordCreateRequest extends ApiRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,11 +24,9 @@ class MessageSendRequest extends ApiRequest
     public function rules()
     {
         return [
-            'type' => 'required',
-            'target_id' => 'required',
-            'clients' => 'required|array',
-            'message' => 'required',
+            'keyword' => 'required|alpha|min:4|max:50',
             'company' => 'required',
+            'teams_id' => 'required',
         ];
     }
 }

@@ -19,7 +19,7 @@ class MessageController extends Controller
 
     public function send(MessageSendRequest $request, $landline = false)
     {
-        $data = $request->only(['type', 'clients', 'message', 'company', 'attachment', 'max', 'block']);
+        $data = $request->only(['type', 'target_id', 'clients', 'message', 'company', 'attachment', 'max', 'block']);
 
         $company = Company::findByName($data['company']);
         if (empty($company)) {
@@ -48,7 +48,12 @@ class MessageController extends Controller
 
         $phones = [];
         foreach ($data['clients'] as $client) {
-            $phones[$client['phone']] = __('Ok');
+            $phones[$client['phone']] = [
+                'message' => '',
+                'finish' => 0,
+                'success' => 0,
+            ];
+
             $text = trim($data['message']);
             if ( ! empty($client['firstname'])) {
                 $text = str_replace('[$FirstName]', $client['firstname'], $text);
@@ -58,26 +63,33 @@ class MessageController extends Controller
                 $text = str_replace('[$LastName]', $client['lastname'], $text);
             }
 
+            if ( ! empty($client['link'])) {
+                $text = str_replace('[$Link]', $client['link'], $text);
+            }
+
             $request_id = '';
             if (TV::phone($client['phone'])) {
                 if (TV::messageLength($text, $data['company'], ! empty($data['max']) ? $data['max'] : null)) {
-                    $response = Trumpia::sendText($client['phone'], $company->code, $text, $attachment);
-                    $request_id = $response['data']['request_id'];
-                    if ($response['code'] != 200) {
-                        $phones[$client['phone']] = $response['message'];
+                    if ($this->blockPhone($client['phone'])) {
+                        $phones[$client['phone']]['message'] = __('For the last '.$this->blockHours.' hours this phone number already received a text'); 
                     } else {
-                        if ($this->blockPhone($client['phone'])) {
-                           $phones[$client['phone']] = __('For the last '.$this->blockHours.' hours this phone number already received a text'); 
-                        }
+                        $response = Trumpia::sendText($client['phone'], $company->code, ' '.$text, $attachment);
+                        $request_id = $response['data']['request_id'];
+                        if ($response['code'] != 200) {
+                            $phones[$client['phone']]['message'] = $response['message'];
+                            $phones[$client['phone']]['finish'] = 1;
+                        }   
                     }
                 } else {
-                    $phones[$client['phone']] = __('Message is too long');
+                    $phones[$client['phone']]['message'] = __('Message is too long');
+                    $phones[$client['phone']]['finish'] = 1;
                 }
             } else {
-                $phones[$client['phone']] = __('Phone Number is incorrect');
+                $phones[$client['phone']]['message'] = __('Phone Number is incorrect');
+                $phones[$client['phone']]['finish'] = 1;
             }
 
-            $this->receiver($message->id, $company->code, $client, $text, $attachment, $phones[$client['phone']], $request_id);
+            $this->receiver($message->id, $company->code, $client, $text, $attachment, $phones[$client['phone']]['message'], $request_id);
         }
 
         return response()->success($phones);
@@ -93,6 +105,7 @@ class MessageController extends Controller
         $message = [
             'phones' => count($data['clients']),
             'type' => $data['type'],
+            'target_id' => $data['target_id'],
             'text' => $data['message'],
             'company' => $data['company'],
             'attachment' => $attachment,
@@ -107,8 +120,9 @@ class MessageController extends Controller
             'message_id' => $message_id,
             'request_id' => $request_id,
             'phone' => $data['phone'],
-            'firstname' => $data['firstname'],
-            'lastname' => $data['lastname'],
+            'firstname' => ! empty($data['firstname']) ? $data['firstname'] : '',
+            'lastname' => ! empty($data['lastname']) ? $data['lastname'] : '',
+            'link' => ! empty($data['link']) ? $data['link'] : '',
             'text' => $text,
             'company' => $company,
             'attachment' => $attachment,

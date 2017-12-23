@@ -46,19 +46,18 @@ class CompanyController extends Controller
         return response()->success(true, 'Company Name was successfully removed');
     }
 
-    public function sync()
+    private function sync()
     {
-        $count = Company::all()->count();
-        if (empty($count)) {
+        if ( ! Company::all()->count()) {
             $companies = Trumpia::allCompanies();
             if ( ! empty($companies)) {
-                foreach ($companies as $company_data) {
+                foreach ($companies as $company) {
                     $data = [
-                        'name' => $company_data['name'],
-                        'code' => $company_data['org_name_id'],
-                        'status' => $company_data['status'],
+                        'name' => $company['name'],
+                        'code' => $company['org_name_id'],
+                        'status' => $company['status'],
                     ];
-                    $company = Company::create($data);
+                    Company::create($data);
                 }
             }
         }

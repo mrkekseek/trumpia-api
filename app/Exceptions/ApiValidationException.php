@@ -24,6 +24,7 @@ class ApiValidationException extends Exception
             'message' => $this->message,
             'validate' => $this->validate
         ];
+
         return response()->json($response, $this->code);
     }
 
