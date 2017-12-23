@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\ApiRequest;
 
-class MessageSendRequest extends FormRequest
+class MessageSendRequest extends ApiRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,7 +25,8 @@ class MessageSendRequest extends FormRequest
     {
         return [
             'type' => 'required',
-            'clients' => 'required',
+            'target_id' => 'required',
+            'clients' => 'required|array',
             'message' => 'required',
             'company' => 'required',
         ];

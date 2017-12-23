@@ -20,6 +20,7 @@ class CreateReceiversTable extends Migration
             $table->string('phone');
             $table->string('firstname');
             $table->string('lastname');
+            $table->string('link');
             $table->text('text');
             $table->string('company');
             $table->text('attachment');

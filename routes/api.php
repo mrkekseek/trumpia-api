@@ -17,7 +17,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'token'], function() {
 	//Route::any('{unit}/{method}', 'ApiController@run');
 	Route::post('company/name', 'CompanyController@name');
 	Route::delete('company/{name}', 'CompanyController@remove');
-
+	
 	Route::post('message/send', 'MessageController@send');
 
 	Route::post('keyword/create', 'KeywordController@create');
