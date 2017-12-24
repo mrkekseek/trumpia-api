@@ -177,7 +177,7 @@ class MessageController extends Controller
 
     private function landlineText($text, $code)
     {
-        $company = Company::whrere('code', $code)->first();
+        $company = Company::where('code', $code)->first();
         return $company->name.': '.$text;
     }
 
