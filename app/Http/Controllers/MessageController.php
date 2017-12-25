@@ -20,7 +20,7 @@ class MessageController extends Controller
 
     public function send(MessageSendRequest $request, $landline = false)
     {
-        $data = $request->only(['type', 'target_id', 'clients', 'message', 'company', 'attachment', 'max', 'block']);
+        $data = $request->only(['type', 'target_id', 'clients', 'message', 'company', 'attachment', 'max', 'block', 'offset']);
 
         $company = Company::findByName($data['company']);
         if (empty($company)) {
@@ -39,7 +39,7 @@ class MessageController extends Controller
             return response()->error('Message contains forbidden characters', 422);
         }
 
-        $hour = Carbon::now()->hour;
+        $hour = Carbon::now()->subHours($offset)->hour;
         if ( ! empty($data['block']) && ($hour < $this->sendFrom || $hour >= $this->sendTo)) {
             return response()->error('Message sending is forbidden till '.$this->sendFrom.' AM', 409);
         }
