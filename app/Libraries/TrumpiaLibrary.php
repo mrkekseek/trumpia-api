@@ -333,6 +333,45 @@ class TrumpiaLibrary
             case 'MRME2351': $message = 'You have entered an invalid SMS ID.'; break;
             case 'MRME3051': $message = 'Your request has failed due to inadequate conditions.'; break;
 
+            //Direct Mobile Message
+            case 'MRME0402': $message = 'You must complete the API Certification to be able to message contacts that have not opted in.'; break;
+            case 'MRME0552': $message = 'The tool you are trying to add is blocked.'; break;
+            case 'MRME0653': $message = 'Text content contains inappropriate phrase(s) and was caught by our spam filter.'; break;
+            case 'MRME0654': $message = 'Organization name contains inappropriate phrase(s) and was caught by our spam filter.'; break;
+            case 'MRME1057': $message = 'Invalid mobile number: Only numerical values are valid.'; break;
+            case 'MRME1058': $message = 'Mobile number must be 10 characters when the country_code is 1, and 1-20 characters when the country_code is not 1.'; break;
+            case 'MRME1059': $message = 'Mobile number may not start with 0 or 1 when the country_code is 1, and may not start with 0 when the country_code is not 1.'; break;
+            case 'MRME1060': $message = 'Only numerical values are valid.'; break;
+            case 'MRME1061': $message = 'An invalid media URL was entered.'; break;
+            case 'MRME1062': $message = 'The file type of your MMS attachment is not supported.'; break;
+            case 'MRME1063': $message = 'If the sender is registered a landline number, you cannot send video file.'; break;
+            case 'MRME1101': $message = 'The text exceeds the maximum length allowed.'; break;
+            case 'MRME1102': $message = 'The MMS subject exceeds the maximum length allowed.'; break;
+            case 'MRME1255': $message = 'The text includes special characters, which are not allowed.'; break;
+            case 'MRME1256': $message = 'The MMS subject includes special characters, which are not allowed.'; break;
+            case 'MRME1257': $message = 'The organization name ID can only include positive numerical values.'; break;
+            case 'MRME2002': $message = 'The mobile number is incorrectly formatted.'; break;
+            case 'MRME2003': $message = 'Every message must include text or media.'; break;
+            case 'MRME2004': $message = 'The organization name ID provided has not been verified. Organization names must be verified before it can be used.'; break;
+            case 'MRME2005': $message = 'Invalid mobile_number : Unable to find a valid country code from the mobile number.'; break;
+            case 'MRME2006': $message = 'The file size of your MMS attachment is too large.'; break;
+            case 'MRME2153': $message = 'The mobile number parameter must not be empty.'; break;
+            case 'MRME2154': $message = 'A message has not been inputted.'; break;
+            case 'MRME2155': $message = 'Text has not been inputted.'; break;
+            case 'MRME2156': $message = 'A media URL has not been entered.'; break;
+            case 'MRME2157': $message = 'A MMS subject has not been entered.'; break;
+            case 'MRME2201': $message = 'The media URL must include http:// or https://.'; break;
+            case 'MRME2353': $message = 'The media URL you entered does not exist.'; break;
+            case 'MRME2354': $message = 'The organization name ID queried does not exist.'; break;
+            case 'MRME2554': $message = 'US(1) and CA(1) are the valid values for the intended sender.'; break;
+            case 'MRME2555': $message = 'Invalid sender value. Verify sender numbers in your account under Manage -> Utilities.'; break;
+            case 'MRME2556': $message = 'The carrier for this mobile number does not support Free to End User.'; break;
+            case 'MRME2557': $message = 'LMS/MMS is only supported in the US.'; break;
+            case 'MRME2558': $message = 'The mobile numbers selected are registered with carriers that do not support MMS. The following is a list of carriers that support MMS: AT&T, Verizon, T-Mobile, Sprint, Alltel, US Cellular, Cricket, Boost-CDMA, Boost Mobile.'; break;
+            case 'MRME1254': $message = 'The task ID is only made up of numerical values; no other characters are allowed.'; break;
+            case 'MRME2355': $message = 'You have entered an invalid task ID.'; break;
+            case 'MRME3052': $message = 'Your request has failed due to inadequate conditions.'; break;
+
             // Organization Name
             case 'MPGE0601': $message = 'Name contains inappropriate phrase(s), and is caught by spam filter.'; break;
             case 'MPGE1101': $message = 'Invalid name. Name must be 1-32 characters in length.'; break;
