@@ -39,7 +39,7 @@ class MessageController extends Controller
             return response()->error('Message contains forbidden characters', 422);
         }
 
-        $hour = Carbon::now()->subHours($offset)->hour;
+        $hour = Carbon::now()->subHours($data['offset'])->hour;
         if ( ! empty($data['block']) && ($hour < $this->sendFrom || $hour >= $this->sendTo)) {
             return response()->error('Message sending is forbidden till '.$this->sendFrom.' AM', 409);
         }
