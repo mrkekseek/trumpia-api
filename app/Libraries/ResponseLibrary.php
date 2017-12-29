@@ -8,6 +8,7 @@ class ResponseLibrary
 {
     static public function send($uri, $data)
     {
+        print_r($uri);
         $client = new Guzzle(['base_uri' => self::baseUri()]);
         $response = $client->request('POST', $uri, [
             'headers' => [

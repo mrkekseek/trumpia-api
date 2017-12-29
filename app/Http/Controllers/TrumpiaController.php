@@ -56,8 +56,13 @@ class TrumpiaController extends Controller
         $xml = Parser::xml($xml);
         $receiver = Receiver::where('phone', $xml['PHONENUMBER'])->orderBy('sent_at', 'desc')->first();
         if ( ! empty($receiver)) {
+            $this->getToken(4);
             $message = Message::find($receiver->message_id);
             print_r($message);
+            $data = [
+                'receiver' => $receiver,
+                'inbox' => $xml,
+            ];
             ResponseLibrary::send($message->type.'/inbox/'.$message->target_id, $receiver);
         }
         dd($xml);
