@@ -17,6 +17,7 @@ class ResponseLibrary
             'http_errors' => false,
             'json' => $data,
         ]);
+        print_r($data);
         $json = json_decode($response->getBody(), true);
         dd($json);
     }
