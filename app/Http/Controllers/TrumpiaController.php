@@ -56,9 +56,12 @@ class TrumpiaController extends Controller
         $xml = Parser::xml($xml);
         $receiver = Receiver::where('phone', $xml['PHONENUMBER'])->orderBy('sent_at', 'desc')->first();
         if ( ! empty($receiver)) {
-            $this->getToken(4);
-            $message = Message::find($receiver->message_id);
-            ResponseLibrary::send($message->type.'/inbox/'.$message->target_id, $xml);
+            $request = Trumpia::findRequest($receiver->request_id);
+            if ( ! empty($request)) {
+                $this->getToken($request->token_id);
+                $message = Message::find($receiver->message_id);
+                ResponseLibrary::send('inbox/'.$message->type.'/'.$message->target_id, $xml);
+            }
         }
     }
 }
