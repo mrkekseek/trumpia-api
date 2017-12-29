@@ -62,7 +62,7 @@ class TrumpiaController extends Controller
                 'receiver' => $receiver,
                 'inbox' => $xml,
             ];
-            ResponseLibrary::send($message->type.'/inbox/'.$message->target_id, $receiver);
+            ResponseLibrary::send($message->type.'/inbox/'.$message->target_id, $data);
         }
     }
 }
