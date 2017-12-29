@@ -53,7 +53,7 @@ class TrumpiaController extends Controller
     {
         $xml = $_GET['xml'];
         $xml = Parser::xml($xml);
-        $receiver = Receiver::where('phone', $xml['PHONENUMBER'])->order_by('sent_at', 'desc')->first();
+        $receiver = Receiver::where('phone', $xml['PHONENUMBER'])->orderBy('sent_at', 'desc')->first();
         print_r($receiver);
         if ( ! empty($receiver)) {
             $message = Message::find($receiver->message_id);
