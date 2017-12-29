@@ -59,7 +59,7 @@ class TrumpiaController extends Controller
             $this->getToken(4);
             $message = Message::find($receiver->message_id);
             $data = [
-                'receiver' => $receiver,
+                //'receiver' => $receiver,
                 'inbox' => $xml,
             ];
             ResponseLibrary::send($message->type.'/inbox/'.$message->target_id, $data);
