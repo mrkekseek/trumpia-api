@@ -8,7 +8,6 @@ class ResponseLibrary
 {
     static public function send($uri, $data)
     {
-        print_r($uri);
         $client = new Guzzle(['base_uri' => self::baseUri()]);
         $response = $client->request('POST', $uri, [
             'headers' => [
@@ -18,7 +17,7 @@ class ResponseLibrary
             'http_errors' => false,
             'json' => $data,
         ]);
-
+        print_r($response);
         /*$json = json_decode($response->getBody(), true);
         dd($json);*/
     }
