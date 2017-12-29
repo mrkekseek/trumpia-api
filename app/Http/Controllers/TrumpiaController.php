@@ -6,6 +6,7 @@ use Parser;
 use App\Trumpia;
 use App\Token;
 use App\Receiver;
+use App\Message;
 use Illuminate\Http\Request;
 use App\Libraries\ResponseLibrary;
 
@@ -54,7 +55,6 @@ class TrumpiaController extends Controller
         $xml = $_GET['xml'];
         $xml = Parser::xml($xml);
         $receiver = Receiver::where('phone', $xml['PHONENUMBER'])->orderBy('sent_at', 'desc')->first();
-        print_r($receiver);
         if ( ! empty($receiver)) {
             $message = Message::find($receiver->message_id);
             print_r($message);
