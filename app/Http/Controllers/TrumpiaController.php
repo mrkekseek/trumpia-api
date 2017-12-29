@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Parser;
 use App\Trumpia;
 use App\Token;
+use App\Receiver;
 use Illuminate\Http\Request;
+use App\Libraries\ResponseLibrary;
 
 class TrumpiaController extends Controller
 {
@@ -51,6 +53,13 @@ class TrumpiaController extends Controller
     {
         $xml = $_GET['xml'];
         $xml = Parser::xml($xml);
+        $receiver = Receiver::where('phone', $xml['PHONENUMBER'])->order_by('sent_at', 'desc')->first();
+        print_r($receiver);
+        if ( ! empty($receiver)) {
+            $message = Message::find($receiver->message_id);
+            print_r($message);
+            ResponseLibrary::send($message->type.'/inbox/'.$message->target_id, $receiver);
+        }
         dd($xml);
     }
 }
