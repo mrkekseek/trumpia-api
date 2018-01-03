@@ -144,6 +144,10 @@ class MessageController extends Controller
         $data['sms']['sent'] = ! empty($data['sms']['sent']) ? $data['sms']['sent'] : (! empty($data['mms']['sent']) ? $data['mms']['sent'] : '');
 
         if ( ! empty($data['sms']['sent'])) {
+            $update = [
+                'finish' => true,
+            ];
+
             $update['success'] = true;
 
             $data['delivery_report']['sms'][0]['dr_code'] = ! empty($data['delivery_report']['sms'][0]['dr_code']) ? $data['delivery_report']['sms'][0]['dr_code'] : (! empty($data['delivery_report']['mms'][0]['dr_code']) ? $data['delivery_report']['mms'][0]['dr_code'] : '');
@@ -154,10 +158,7 @@ class MessageController extends Controller
                     $update['success'] = false;
                 }
             }
-
-            $update = [
-                'finish' => true,
-            ];
+            
         } else {
             if (empty($receiver->landline)) {
                 $response = Trumpia::sendText($receiver->phone, $receiver->company, $this->landlineText($receiver->text, $receiver->company), $receiver->attachment, true);
