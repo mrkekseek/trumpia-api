@@ -144,9 +144,19 @@ class MessageController extends Controller
         $data['sms']['sent'] = ! empty($data['sms']['sent']) ? $data['sms']['sent'] : (! empty($data['mms']['sent']) ? $data['mms']['sent'] : '');
 
         if ( ! empty($data['sms']['sent'])) {
+            $update['success'] = true;
+
+            $data['delivery_report']['sms'][0]['dr_code'] = ! empty($data['delivery_report']['sms'][0]['dr_code']) ? $data['delivery_report']['sms'][0]['dr_code'] : (! empty($data['delivery_report']['mms'][0]['dr_code']) ? $data['delivery_report']['mms'][0]['dr_code'] : '');
+
+            if ( ! empty($data['delivery_report']['sms'][0]['dr_code'])) {
+                $update['message'] = Trumpia::report($data['delivery_report']['sms'][0]['dr_code']);
+                if ($data['delivery_report']['sms'][0]['dr_code'] != 'DR000') {
+                    $update['success'] = false;
+                }
+            }
+
             $update = [
                 'finish' => true,
-                'success' => true,
             ];
         } else {
             if (empty($receiver->landline)) {
