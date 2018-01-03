@@ -141,6 +141,8 @@ class MessageController extends Controller
         $receiver = Receiver::findByRequest($data['request_id']);
         $update = [];
 
+        $data['sms']['sent'] = ! empty($data['sms']['sent']) ? $data['sms']['sent'] : (! empty($data['mms']['sent']) ? $data['mms']['sent'] : '');
+
         if ( ! empty($data['sms']['sent'])) {
             $update = [
                 'finish' => true,
@@ -164,6 +166,8 @@ class MessageController extends Controller
                 if ( ! empty($data['status_code'])) {
                     $update['message'] = Trumpia::message($data['status_code']);
                 }
+
+                $data['delivery_report']['sms'][0]['dr_code'] = ! empty($data['delivery_report']['sms'][0]['dr_code']) ? $data['delivery_report']['sms'][0]['dr_code'] : (! empty($data['delivery_report']['mms'][0]['dr_code']) ? $data['delivery_report']['mms'][0]['dr_code'] : '');
 
                 if ( ! empty($data['delivery_report']['sms'][0]['dr_code'])) {
                     $update['message'] = Trumpia::report($data['delivery_report']['sms'][0]['dr_code']);
