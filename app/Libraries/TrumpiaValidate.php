@@ -5,7 +5,7 @@ namespace App\Libraries;
 class TrumpiaValidate
 {
     const MAX_LENGTH = 500;
-    const SUPPORTED_CHARACTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@!“#$%&‘()*+,-.?/:;<=> ';
+    const SUPPORTED_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@!“#$%&‘'’()*+,-.?/:;<=> ";
 
     static public function message($text)
     {

@@ -79,7 +79,7 @@ class TrumpiaLibrary
             $phone = '+380508617135';
             $country_code = 0;
         }
-
+        $text = str_replace(["‘", "’"], "'", $text);
         $data = [
             'country_code' => $country_code,
             'mobile_number' => $phone,
