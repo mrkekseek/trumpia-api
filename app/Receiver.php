@@ -20,8 +20,8 @@ class Receiver extends Model
         return self::where('message_id', $message_id)->where('finish', true)->get();
     }
 
-    static public function wasSent($phone, $hours)
+    static public function wasSent($id, $phone, $hours)
     {
-        return self::where('phone', $phone)->where('sent_at', '>', Carbon::now()->addHours($hours * (-1)))->count() > 0;
+        return self::where('id', '<>', $id)->where('phone', $phone)->where('sent_at', '>', Carbon::now()->subHours($hours))->count() > 0;
     }
 }
