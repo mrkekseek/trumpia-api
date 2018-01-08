@@ -102,6 +102,7 @@ class MessageController extends Controller
                         if ($response['code'] != 200) {
                             $phones[$client['phone']]['message'] = $response['message'];
                             $phones[$client['phone']]['finish'] = 1;
+                            $phones[$client['phone']]['request_id'] = $request_id;
                         }
                     }
                 } else {
