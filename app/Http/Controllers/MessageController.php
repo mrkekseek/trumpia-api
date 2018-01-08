@@ -98,7 +98,7 @@ class MessageController extends Controller
                         $phones[$client['phone']]['finish'] = 1;
                     } else {
                         $response = Trumpia::sendText($client['phone'], $company->code, ' '.$text, $attachment);
-                        $request_id = $response['data']['request_id'];
+                        $phones[$client['phone']]['request_id'] = $response['data']['request_id'];
                         if ($response['code'] != 200) {
                             $phones[$client['phone']]['message'] = $response['message'];
                             $phones[$client['phone']]['finish'] = 1;
