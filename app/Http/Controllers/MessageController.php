@@ -50,6 +50,7 @@ class MessageController extends Controller
             return response()->error('Company Name is denied', 406);
         }
 
+        $data['message'] = str_replace("\n", " ", $data['message']);
         if ( ! TV::message($data['message'])) {
             $message->update([
                 'message' => __('Message contains forbidden characters'),
