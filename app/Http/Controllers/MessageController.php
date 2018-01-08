@@ -22,30 +22,50 @@ class MessageController extends Controller
     {
         $data = $request->only(['type', 'target_id', 'clients', 'message', 'company', 'attachment', 'max', 'block', 'offset']);
 
+        $attachment = ! empty($data['attachment']) ? $data['attachment'] : false;
+        $message = $this->create($data, $attachment);
+
         $company = Company::findByName($data['company']);
         if (empty($company)) {
+            $message->update([
+                'message' => __('Company Name is not verified'),
+                'finish' => true,
+            ]);
             return response()->error('Company Name is not verified', 422);
         }
 
         if ($company->status == Company::PENDING) {
+            $message->update([
+                'message' => __('Company Name is still in pending'),
+                'finish' => true,
+            ]);
             return response()->error('Company Name is still in pending');
         }
 
         if ($company->status == Company::DENIED) {
+            $message->update([
+                'message' => __('Company Name is denied'),
+                'finish' => true,
+            ]);
             return response()->error('Company Name is denied', 406);
         }
 
         if ( ! TV::message($data['message'])) {
+            $message->update([
+                'message' => __('Message contains forbidden characters'),
+                'finish' => true,
+            ]);
             return response()->error('Message contains forbidden characters', 422);
         }
 
         $hour = Carbon::now()->subHours($data['offset'])->hour;
         if ( ! empty($data['block']) && ($hour < $this->sendFrom || $hour >= $this->sendTo)) {
+            $message->update([
+                'message' => __('Message sending is forbidden till '.$this->sendFrom.' AM'),
+                'finish' => true,
+            ]);
             return response()->error('Message sending is forbidden till '.$this->sendFrom.' AM', 409);
         }
-
-        $attachment = ! empty($data['attachment']) ? $data['attachment'] : false;
-        $message = $this->create($data, $attachment);
 
         $phones = [];
         foreach ($data['clients'] as $client) {
@@ -68,10 +88,12 @@ class MessageController extends Controller
                 $text = str_replace('[$Link]', $client['link'], $text);
             }
 
+            $receiver = $this->receiver($message->id, $company->code, $client, $text, $attachment);
+
             $request_id = '';
             if (TV::phone($client['phone'])) {
                 if (TV::messageLength($text, $data['company'], ! empty($data['max']) ? $data['max'] : null)) {
-                    if ($this->blockPhone($client['phone'])) {
+                    if ($this->blockPhone($receiver->id, $client['phone'])) {
                         $phones[$client['phone']]['message'] = __('For the last '.$this->blockHours.' hours this phone number already received a text'); 
                         $phones[$client['phone']]['finish'] = 1;
                     } else {
@@ -91,15 +113,15 @@ class MessageController extends Controller
                 $phones[$client['phone']]['finish'] = 1;
             }
 
-            $this->receiver($message->id, $company->code, $client, $text, $attachment, $phones[$client['phone']]['message'], $request_id);
+            $receiver->update($phones[$client['phone']]);
         }
 
         return response()->success($phones);
     }
 
-    private function blockPhone($phone)
+    private function blockPhone($id, $phone)
     {
-        return Receiver::wasSent($phone, $this->blockHours);
+        return Receiver::wasSent($id, $phone, $this->blockHours);
     }
 
     private function create($data, $attachment)
@@ -111,16 +133,17 @@ class MessageController extends Controller
             'text' => $data['message'],
             'company' => $data['company'],
             'attachment' => $attachment,
+            'message' => '',
         ];
 
         return Message::create($message);
     }
 
-    private function receiver($message_id, $company, $data, $text, $attachment, $message, $request_id)
+    private function receiver($message_id, $company, $data, $text, $attachment)
     {
         $receiver = [
             'message_id' => $message_id,
-            'request_id' => $request_id,
+            'request_id' => '',
             'phone' => $data['phone'],
             'firstname' => ! empty($data['firstname']) ? $data['firstname'] : '',
             'lastname' => ! empty($data['lastname']) ? $data['lastname'] : '',
@@ -128,8 +151,7 @@ class MessageController extends Controller
             'text' => $text,
             'company' => $company,
             'attachment' => $attachment,
-            'finish' => empty($request_id),
-            'message' => $message,
+            'message' => '',
             'sent_at' => Carbon::now(),
         ];
 
