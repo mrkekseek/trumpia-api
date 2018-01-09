@@ -22,6 +22,6 @@ class Receiver extends Model
 
     static public function wasSent($id, $phone, $hours)
     {
-        return self::where('id', '<>', $id)->where('phone', $phone)->where('sent_at', '>', Carbon::now()->subHours($hours))->count() > 0;
+        return self::where('id', '<>', $id)->where('phone', $phone)->where('request_id', '!=', '')->where('sent_at', '>', Carbon::now()->subHours($hours))->count() > 0;
     }
 }
