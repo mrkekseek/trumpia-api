@@ -162,15 +162,13 @@ class MessageController extends Controller
     public function sendPush($data = [])
     {
         $receiver = Receiver::findByRequest($data['request_id']);
-        $update = [];
+        $update = [
+            'finish' => true,
+        ];
 
         $data['sms']['sent'] = ! empty($data['sms']['sent']) ? $data['sms']['sent'] : (! empty($data['mms']['sent']) ? $data['mms']['sent'] : '');
 
         if ( ! empty($data['sms']['sent'])) {
-            $update = [
-                'finish' => true,
-            ];
-
             $update['success'] = true;
 
             $data['delivery_report']['sms'][0]['dr_code'] = ! empty($data['delivery_report']['sms'][0]['dr_code']) ? $data['delivery_report']['sms'][0]['dr_code'] : (! empty($data['delivery_report']['mms'][0]['dr_code']) ? $data['delivery_report']['mms'][0]['dr_code'] : '');
@@ -181,8 +179,9 @@ class MessageController extends Controller
                     $update['success'] = false;
                 }
             }
-            
-        } else {
+        } 
+
+        if (empty($update['success'])) {
             if (empty($receiver->landline)) {
                 $response = Trumpia::sendText($receiver->phone, $receiver->company, $this->landlineText($receiver->text, $receiver->company), $receiver->attachment, true);
                 $request_id = $response['data']['request_id'];
@@ -193,10 +192,6 @@ class MessageController extends Controller
                     'sent_at' => Carbon::now(),
                 ];
             } else {
-                $update = [
-                    'finish' => true,
-                ];
-
                 if ( ! empty($data['status_code'])) {
                     $update['message'] = Trumpia::message($data['status_code']);
                 }
