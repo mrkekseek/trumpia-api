@@ -20,7 +20,7 @@ class MessageController extends Controller
 
     public function send(MessageSendRequest $request, $landline = false)
     {
-        $data = $request->only(['type', 'target_id', 'clients', 'message', 'company', 'attachment', 'max', 'block', 'offset']);
+        $data = $request->only(['type', 'target_id', 'clients', 'message', 'company', 'attachment', 'max', 'block', 'offset', 'block_24']);
 
         $attachment = ! empty($data['attachment']) ? $data['attachment'] : false;
         $message = $this->create($data, $attachment);
@@ -94,7 +94,7 @@ class MessageController extends Controller
             $request_id = '';
             if (TV::phone($client['phone'])) {
                 if (TV::messageLength($text, $data['company'], ! empty($data['max']) ? $data['max'] : null)) {
-                    if ($this->blockPhone($receiver->id, $client['phone'])) {
+                    if ($data['block_24'] && $this->blockPhone($receiver->id, $client['phone'])) {
                         $phones[$client['phone']]['message'] = __('For the last '.$this->blockHours.' hours this phone number already received a text'); 
                         $phones[$client['phone']]['finish'] = 1;
                     } else {

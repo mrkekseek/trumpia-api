@@ -17,9 +17,8 @@ class ResponseLibrary
             'http_errors' => false,
             'json' => $data,
         ]);
-
-        /*$json = json_decode($response->getBody(), true);
-        dd($json);*/
+        //print_r($response->getBody()->getContents());
+        //$json = json_decode($response->getBody(), true);
     }
 
     static private function baseUri()
