@@ -140,10 +140,11 @@ class MessageController extends Controller
         return Message::create($message);
     }
 
-    private function receiver($message_id, $company, $data, $text, $attachment)
+    private function receiver($message_id, $company, $data, $text, $attachment, $parent_id = 0)
     {
         $receiver = [
             'message_id' => $message_id,
+            'parent_id' => $parent_id,
             'request_id' => '',
             'phone' => $data['phone'],
             'firstname' => ! empty($data['firstname']) ? $data['firstname'] : '',
@@ -183,14 +184,34 @@ class MessageController extends Controller
 
         if (empty($update['success'])) {
             if (empty($receiver->landline)) {
-                $response = Trumpia::sendText($receiver->phone, $receiver->company, $this->landlineText($receiver->text, $receiver->company), $receiver->attachment, true);
-                $request_id = $response['data']['request_id'];
 
-                $update = [
-                    'landline' => true,
-                    'request_id' => $request_id,
-                    'sent_at' => Carbon::now(),
-                ];
+                $texts = $this->createLandLineText($receiver->text, $receiver->company);
+                
+                foreach ($texts as $key => $text) {
+                    $response = Trumpia::sendText($receiver->phone, $receiver->company, $text, $receiver->attachment, true);
+                    $request_id = $response['data']['request_id'];
+                    if ( ! empty($key)) {
+                        $data = [
+                            'phone' => $receiver->phone,
+                            'firstname' => $receiver->firstname,
+                            'lastname' => $receiver->lastname,
+                            'link' =>  $receiver->link
+                        ];
+
+                        $receiver = $this->receiver($receiver->message_id, $receiver->company, $data, $text, $receiver->attachment, $parentId);
+                    } else {
+                        $receiver->update(['text' => $text]);
+                        $parentId = $receiver->id;
+                        sleep(1);
+                    }
+                    
+                    $update = [
+                        'landline' => true,
+                        'request_id' => $request_id,
+                        'sent_at' => Carbon::now(),
+                    ];
+                    $receiver->update($update);
+                }
             } else {
                 if ( ! empty($data['status_code'])) {
                     $update['message'] = Trumpia::message($data['status_code']);
@@ -212,6 +233,40 @@ class MessageController extends Controller
     {
         $company = Company::where('code', $code)->first();
         return $company->name.': '.$text;
+    }
+
+    private function createLandLineText($text, $code)
+    {
+        $company = Company::where('code', $code)->first();
+        $count = $secondCount = strlen(' Txt STOP to OptOut');
+        $fullText = $company->name.': '.$text;
+        $texts = [];
+
+        if (strlen($fullText) + $count > 250) {
+            $temp = explode(' ', $fullText);
+
+            $firstText = '';
+            $secondText = '';
+            $second = false;
+
+            foreach ($temp as $word) {
+                $count += strlen($word) + 1;
+                $texts = [];
+                if ($count <= 250) {
+                    $firstText .= $word.' ';
+                } else {
+                    $secondCount += strlen($word) + 1;
+                    if ($secondCount <= 250) {
+                        $secondText .= $word.' ';
+                    }
+                }
+                $texts[] = trim($firstText);
+                $texts[] = trim($secondText);
+            }
+        } else {
+            $texts[] = $fullText;
+        }
+        return $texts;
     }
 
     private function response($message_id)
