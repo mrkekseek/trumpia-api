@@ -17,7 +17,7 @@ class Receiver extends Model
 
     static public function allFinished($message_id)
     {
-        return self::where('message_id', $message_id)->where('finish', true)->get();
+        return self::where('message_id', $message_id)->where('finish', true)->where('parent_id', 0)->get();
     }
 
     static public function wasSent($id, $phone, $hours)
