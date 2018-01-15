@@ -53,6 +53,7 @@ class TrumpiaController extends Controller
     public function inbox()
     {
         $xml = $_GET['xml'];
+        $this->saveLog($xml, 'INBOX');
         $xml = Parser::xml($xml);
         $receiver = Receiver::where('phone', $xml['PHONENUMBER'])->orderBy('sent_at', 'desc')->first();
         if ( ! empty($receiver)) {
@@ -63,5 +64,13 @@ class TrumpiaController extends Controller
                 ResponseLibrary::send('inbox/'.$message->type.'/'.$message->target_id, $xml);
             }
         }
+    }
+
+    public function saveLog($data, $source)
+    {
+        if ( ! file_exists('logs')) {
+            mkdir('logs', 0777);
+        }
+        file_put_contents('logs/logger.txt', date('[Y-m-d H:i:s] ').$source.': '.print_r($data, true).PHP_EOL, FILE_APPEND | LOCK_EX);
     }
 }
