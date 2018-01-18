@@ -202,7 +202,9 @@ class MessageController extends Controller
                     } else {
                         $receiver->update(['text' => $text]);
                         $parentId = $receiver->id;
-                        sleep(1);
+                        if (count($texts) > 1) {
+                            sleep(1);
+                        }
                     }
                     
                     $update = [
