@@ -20,6 +20,19 @@ class CompanyController extends Controller
             return response()->success($company->status);
         }
 
+        $companies = Trumpia::allCompanies();
+        foreach ($companies as $company) {
+            if ($company['name'] == $name) {
+                $data = [
+                    'name' => $company['name'],
+                    'code' => $company['org_name_id'],
+                    'status' => $company['status'],
+                ];
+                Company::create($data);
+                return response()->success($company['status']);
+            }
+        }
+
         $response = Trumpia::saveCompany($name);
         if ($response['code'] == 200) {
             $data = [

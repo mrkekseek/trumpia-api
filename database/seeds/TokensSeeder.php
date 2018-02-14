@@ -15,10 +15,10 @@ class TokensSeeder extends Seeder
         DB::table('tokens')->truncate();
 
         DB::table('tokens')->insert([
-            'token' => '$2y$10$hBYMT3gYolARvwHUf4q4NuTkwcNLpwZHR3VF4nF3esfjcqIg7rHfO',
+            'token' => '$2y$10$hBYMT3gYolARvwHUf4q4NuTkwcNLpwZHR3VF4nF3esfjcqIg7rHf1',
             'project' => 'ContractorTexter',
             'domain' => 'app.contractortexter.com',
-            'secure' => 0,
+            'secure' => 1,
         ]);
 
         DB::table('tokens')->insert([
@@ -36,10 +36,10 @@ class TokensSeeder extends Seeder
         ]);
 
         DB::table('tokens')->insert([
-            'token' => '$2y$10$hBYMT3gYolARvwHUf4q4NuTkwcNLpwZHR3VF4nF3esfjcqIg7rHf1',
-            'project' => 'ContractorTexter',
-            'domain' => '34.214.246.59',
-            'secure' => 0,
+            'token' => '$2y$10$hBYMT3gYolARvwHUf4q4NuTkwcNLpwZHR3VF4nF3esfjcqIg7rHfR',
+            'project' => 'ReviewMyRehab',
+            'domain' => 'app.reviewmyrehab.com',
+            'secure' => 1,
         ]);
     }
 }
