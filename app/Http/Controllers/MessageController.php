@@ -27,11 +27,25 @@ class MessageController extends Controller
 
         $company = Company::findByName($data['company']);
         if (empty($company)) {
-            $message->update([
-                'message' => __('Company Name is not verified'),
-                'finish' => true,
-            ]);
-            return response()->error('Company Name is not verified', 422);
+            $companies = Trumpia::allCompanies();
+            foreach ($companies as $c) {
+                if ($c['name'] == $data['company']) {
+                    $c_data = [
+                        'name' => $c['name'],
+                        'code' => $c['org_name_id'],
+                        'status' => $c['status'],
+                    ];
+                    $company = Company::create($c_data);
+                }
+            }
+
+            if (empty($company)) {
+                $message->update([
+                    'message' => __('Company Name is not verified'),
+                    'finish' => true,
+                ]);
+                return response()->error('Company Name is not verified', 422);
+            }
         }
 
         if ($company->status == Company::PENDING) {
@@ -88,6 +102,8 @@ class MessageController extends Controller
             if ( ! empty($client['link'])) {
                 $text = str_replace('[$Link]', $client['link'], $text);
             }
+
+            $text = str_replace(['[$FirstName]', '[$LastName]', '[$Link]'], '', $text);
 
             $receiver = $this->receiver($message->id, $company->code, $client, $text, $attachment);
 
