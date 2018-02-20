@@ -10,6 +10,11 @@ class Receiver extends Model
     protected $guarded = [];
     protected $dates = ['sent_at', 'created_at', 'updated_at'];
 
+    public function trumpia()
+    {
+        return $this->hasOne('App\Trumpia', 'request_id', 'request_id');
+    }
+
     static public function findByRequest($request_id)
     {
         return self::where('request_id', $request_id)->first();

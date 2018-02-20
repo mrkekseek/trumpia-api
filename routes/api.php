@@ -21,6 +21,8 @@ Route::group(['prefix' => 'v1', 'middleware' => 'token'], function() {
 	Route::post('message/send', 'MessageController@send');
 
 	Route::post('keyword/create', 'KeywordController@create');
+
+	Route::post('reports/get', 'ReportsController@get');
 });
 
 Route::post('push', 'TrumpiaController@push');
