@@ -4,27 +4,39 @@ namespace App\Libraries;
 
 use App\Trumpia;
 use \GuzzleHttp\Client as Guzzle;
+use App\Libraries\TrumpiaFake;
 
 class TrumpiaLibrary
 {
     static private function request($uri, $type, $data = [], $method = 'put')
     {
-        $client = new Guzzle(['base_uri' => config('services.trumpia.url')]);
-        $response = $client->request(strtoupper($method), $uri, [
-            'headers' => [
-                'Content-Type' => 'application/json',
-                'X-Apikey' => config('services.trumpia.key'),
-            ],
-            'http_errors' => false,
-            'json' => $data,
-        ]);
+        $json = [];
+        $code = 200;
+        
+        if (config('app.state') == 'testing') {
+            $json = TrumpiaFake::request($uri, $type, $data, $method);
+        } else {
+            $client = new Guzzle(['base_uri' => config('services.trumpia.url')]);
+            $response = $client->request(strtoupper($method), $uri, [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'X-Apikey' => config('services.trumpia.key'),
+                ],
+                'http_errors' => false,
+                'json' => $data,
+            ]);
 
-        $json = json_decode($response->getBody(), true);
-        return $method == 'get' ? $json : self::response($type, $data, $json, $response->getStatusCode());
+            $json = json_decode($response->getBody(), true);
+            $code = $response->getStatusCode();
+        }
+        
+        return self::response($type, $data, $json, $code);
     }
 
     static private function response($type, $data, $response, $code)
     {
+        $error = '';
+        
         if ( ! empty($response['status_code'])) {
             $error = self::message($response['status_code']);
         }

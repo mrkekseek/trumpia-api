@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use DB;
 use App\Token;
+use Illuminate\Support\Facades\Artisan;
 
 class TokenCheck
 {
@@ -17,20 +18,34 @@ class TokenCheck
      */
     public function handle($request, Closure $next)
     {
-        config(['database.connections.data' => [
-            'driver' => 'mysql',
-            'host' => env('DB_HOST'),
-            'database' => 'api_ct',
-            'username' => env('DB_USERNAME'),
-            'password' => env('DB_PASSWORD'),
-        ]]);
-        DB::setDefaultConnection('data');
-
+        if (config('app.state') == 'testing') {
+            config(['database.connections.data' => [
+                'driver' => 'mysql',
+                'host' => env('DB_HOST'),
+                'database' => 'api_ct_test',
+                'username' => env('DB_USERNAME'),
+                'password' => env('DB_PASSWORD'),
+            ]]);
+            DB::setDefaultConnection('data');
+            
+            Artisan::call('migrate');
+            Artisan::call('db:seed');
+        } else {
+            config(['database.connections.data' => [
+                'driver' => 'mysql',
+                'host' => env('DB_HOST'),
+                'database' => 'api_ct',
+                'username' => env('DB_USERNAME'),
+                'password' => env('DB_PASSWORD'),
+            ]]);
+            DB::setDefaultConnection('data');
+        }
+        
         $token = Token::where('token', $request->header('X-Project-Token'))->first();
         if (empty($token)) {
             return response()->error('Unauthenticated', 401);
         }
-        
+
         config(['token.id' => $token->id]);
         config(['token.token' => $token->token]);
         config(['token.project' => $token->project]);

@@ -5,35 +5,50 @@ namespace App\Http\Controllers;
 use App\Company;
 use App\Libraries\TrumpiaLibrary as Trumpia;
 use App\Libraries\ResponseLibrary;
+use App\Libraries\TrumpiaValidate;
 use Illuminate\Http\Request;
 use App\Http\Requests\CompanyNameRequest;
 
 class CompanyController extends Controller
 {
+    public function all()
+    {
+        return response()->success(Trumpia::allCompanies());
+    }
+
     public function name(CompanyNameRequest $request)
     {
         $this->sync();
-
+        
         $name = $request->name;
+
+        $validate_name = TrumpiaValidate::companyName($name);
+        if ( ! $validate_name) {
+            return response()->error('Company name is larger then 32 characters');
+        }
+
         $company = Company::findByName($name);
         if ( ! empty($company)) {
             return response()->success($company->status);
         }
 
-        $companies = Trumpia::allCompanies();
-        foreach ($companies as $company) {
-            if ($company['name'] == $name) {
-                $data = [
-                    'name' => $company['name'],
-                    'code' => $company['org_name_id'],
-                    'status' => $company['status'],
-                ];
-                Company::create($data);
-                return response()->success($company['status']);
+        $response = Trumpia::allCompanies();
+        if ($response['code'] == 200) {
+            foreach ($response['data'] as $company) {
+                if ($company['name'] == $name) {
+                    $data = [
+                        'name' => $company['name'],
+                        'code' => $company['org_name_id'],
+                        'status' => $company['status'],
+                    ];
+                    Company::create($data);
+                    return response()->success($company['status']);
+                }
             }
         }
 
         $response = Trumpia::saveCompany($name);
+        return response()->success($response);
         if ($response['code'] == 200) {
             $data = [
                 'name' => $name,
@@ -62,15 +77,17 @@ class CompanyController extends Controller
     private function sync()
     {
         if ( ! Company::all()->count()) {
-            $companies = Trumpia::allCompanies();
-            if ( ! empty($companies)) {
-                foreach ($companies as $company) {
-                    $data = [
-                        'name' => $company['name'],
-                        'code' => $company['org_name_id'],
-                        'status' => $company['status'],
-                    ];
-                    Company::create($data);
+            $response = Trumpia::allCompanies();
+            if ($response['code'] == 200) {
+                if ( ! empty($response['data'])) {
+                    foreach ($response['data'] as $company) {
+                        $data = [
+                            'name' => $company['name'],
+                            'code' => $company['org_name_id'],
+                            'status' => $company['status'],
+                        ];
+                        Company::create($data);
+                    }
                 }
             }
         }
