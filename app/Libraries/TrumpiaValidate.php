@@ -7,6 +7,14 @@ class TrumpiaValidate
     const MAX_LENGTH = 500;
     const SUPPORTED_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@!“#$%&‘'’()*+,-.?/:;<=> ";
 
+    static public function companyName($name) {
+        if (strlen($name) <= 32) {
+            return true;
+        }
+            
+        return false;
+    }
+
     static public function message($text)
     {
         $text = str_replace(['[$FirstName]', '[$LastName]', '[$Link]'], '', $text);
