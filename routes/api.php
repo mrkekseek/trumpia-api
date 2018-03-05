@@ -13,8 +13,9 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::group(['prefix' => 'v1', 'middleware' => 'token'], function() {
+Route::group(['prefix' => 'v1', 'middleware' => ['testing', 'token']], function() {
 	//Route::any('{unit}/{method}', 'ApiController@run');
+	Route::get('company/all', 'CompanyController@all');
 	Route::post('company/name', 'CompanyController@name');
 	Route::delete('company/{name}', 'CompanyController@remove');
 	
