@@ -27,15 +27,17 @@ class MessageController extends Controller
 
         $company = Company::findByName($data['company']);
         if (empty($company)) {
-            $companies = Trumpia::allCompanies();
-            foreach ($companies as $c) {
-                if ($c['name'] == $data['company']) {
-                    $c_data = [
-                        'name' => $c['name'],
-                        'code' => $c['org_name_id'],
-                        'status' => $c['status'],
-                    ];
-                    $company = Company::create($c_data);
+            $response = Trumpia::allCompanies();
+            if ($response['code'] == 200) {
+                foreach ($response['data'] as $c) {
+                    if ($c['name'] == $data['company']) {
+                        $c_data = [
+                            'name' => $c['name'],
+                            'code' => $c['org_name_id'],
+                            'status' => $c['status'],
+                        ];
+                        $company = Company::create($c_data);
+                    }
                 }
             }
 
@@ -63,7 +65,7 @@ class MessageController extends Controller
             ]);
             return response()->error('Company Name is denied', 406);
         }
-
+        
         $data['message'] = str_replace("\n", " ", $data['message']);
         if ( ! TV::message($data['message'])) {
             $message->update([
@@ -104,7 +106,6 @@ class MessageController extends Controller
             }
 
             $text = str_replace(['[$FirstName]', '[$LastName]', '[$Link]'], '', $text);
-
             $receiver = $this->receiver($message->id, $company->code, $client, $text, $attachment);
 
             $request_id = '';
