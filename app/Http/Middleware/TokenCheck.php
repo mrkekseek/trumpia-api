@@ -31,14 +31,14 @@ class TokenCheck
             Artisan::call('migrate');
             Artisan::call('db:seed');
         } else {
-            config(['database.connections.data' => [
+            /* config(['database.connections.data' => [
                 'driver' => 'mysql',
                 'host' => env('DB_HOST'),
                 'database' => 'api_ct',
                 'username' => env('DB_USERNAME'),
                 'password' => env('DB_PASSWORD'),
             ]]);
-            DB::setDefaultConnection('data');
+            DB::setDefaultConnection('data'); */
         }
         
         $token = Token::where('token', $request->header('X-Project-Token'))->first();

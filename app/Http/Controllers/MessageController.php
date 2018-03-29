@@ -90,7 +90,7 @@ class MessageController extends Controller
                 'finish' => 0,
                 'success' => 0,
             ];
-
+            
             $text = trim($data['message']);
             if ( ! empty($client['firstname'])) {
                 $text = str_replace('[$FirstName]', $client['firstname'], $text);
