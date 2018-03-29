@@ -45,7 +45,7 @@ class TrumpiaValidate
         if (strpos($phone, '1') === 0 || strpos($phone, '0') === 0) {
             return false;
         }
-        
+
         return is_numeric($phone);
     }
 }
