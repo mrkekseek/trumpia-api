@@ -17,7 +17,7 @@ class TrumpiaValidate
 
     static public function message($text)
     {
-        $text = str_replace(['[$FirstName]', '[$LastName]', '[$Link]'], '', $text);
+        $text = str_replace(['[$FirstName]', '[$LastName]', '[$Link]', '[$Website]', '[$OfficePhone]'], '', $text);
         for ($i = 0, $count = strlen($text); $i < $count; $i++) {
             if (strpos(self::SUPPORTED_CHARACTERS, $text[$i]) === false) {
                return false;

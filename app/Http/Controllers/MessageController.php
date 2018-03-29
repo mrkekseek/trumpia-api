@@ -104,8 +104,16 @@ class MessageController extends Controller
             if ( ! empty($client['link'])) {
                 $text = str_replace('[$Link]', $client['link'], $text);
             }
+            
+            if ( ! empty($client['website_shortlink'])) {
+                $text = str_replace('[$Website]', $client['website_shortlink'], $text);
+            }
+            
+            if ( ! empty($client['office_phone'])) {
+                $text = str_replace('[$OfficePhone]', $client['office_phone'], $text);
+            }
 
-            $text = str_replace(['[$FirstName]', '[$LastName]', '[$Link]'], '', $text);
+            $text = str_replace(['[$FirstName]', '[$LastName]', '[$Link]', '[$Website]', '[$OfficePhone]'], '', $text);
             $receiver = $this->receiver($message->id, $company->code, $client, $text, $attachment);
 
             $request_id = '';
