@@ -11,7 +11,6 @@
         "laravel/framework": "5.5.*",
         "laravel/tinker": "~1.0",
         "nathanmac/Parser": "^4.3",
-        "propaganistas/laravel-phone": "^4.0",
         "twilio/sdk": "^5.16"
     },
     "require-dev": {
