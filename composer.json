@@ -10,8 +10,7 @@
         "guzzlehttp/guzzle": "^6.3",
         "laravel/framework": "5.5.*",
         "laravel/tinker": "~1.0",
-        "nathanmac/Parser": "^4.3",
-        "twilio/sdk": "^5.16"
+        "nathanmac/Parser": "^4.3"
     },
     "require-dev": {
         "filp/whoops": "~2.0",
