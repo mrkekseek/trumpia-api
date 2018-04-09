@@ -21,7 +21,6 @@ class MessageController extends Controller
     public function send(MessageSendRequest $request, $landline = false)
     {
         $data = $request->only(['type', 'target_id', 'clients', 'message', 'company', 'attachment', 'max', 'block', 'offset', 'block_24']);
-
         $attachment = ! empty($data['attachment']) ? $data['attachment'] : false;
         $message = $this->create($data, $attachment);
 
@@ -108,7 +107,7 @@ class MessageController extends Controller
             if ( ! empty($client['website_shortlink'])) {
                 $text = str_replace('[$Website]', $client['website_shortlink'], $text);
             }
-            
+
             if ( ! empty($client['office_phone'])) {
                 $text = str_replace('[$OfficePhone]', $client['office_phone'], $text);
             }

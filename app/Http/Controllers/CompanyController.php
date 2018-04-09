@@ -48,7 +48,6 @@ class CompanyController extends Controller
         }
 
         $response = Trumpia::saveCompany($name);
-        return response()->success($response);
         if ($response['code'] == 200) {
             $data = [
                 'name' => $name,
