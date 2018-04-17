@@ -83,14 +83,10 @@ class TrumpiaLibrary
     {
         $country_code = 1;
         if ($phone == '2222222222') {
-            $phone = '+380981745686';
+            $phone = '+380958067064';
             $country_code = 0;
         }
 
-        if ($phone == '3333333333') {
-            $phone = '+380508617135';
-            $country_code = 0;
-        }
         $text = str_replace(["‘", "’"], "'", $text);
         $data = [
             'country_code' => $country_code,
