@@ -64,7 +64,7 @@ class MessageController extends Controller
             ]);
             return response()->error('Company Name is denied', 406);
         }
-        
+
         $data['message'] = str_replace("\n", " ", $data['message']);
         if ( ! TV::message($data['message'])) {
             $message->update([
@@ -103,7 +103,7 @@ class MessageController extends Controller
             if ( ! empty($client['link'])) {
                 $text = str_replace('[$Link]', $client['link'], $text);
             }
-            
+
             if ( ! empty($client['website_shortlink'])) {
                 $text = str_replace('[$Website]', $client['website_shortlink'], $text);
             }
@@ -114,12 +114,12 @@ class MessageController extends Controller
 
             $text = str_replace(['[$FirstName]', '[$LastName]', '[$Link]', '[$Website]', '[$OfficePhone]'], '', $text);
             $receiver = $this->receiver($message->id, $company->code, $client, $text, $attachment);
-
+            //return response()->error('zaglushka');
             $request_id = '';
             if (TV::phone($client['phone'])) {
                 if (TV::messageLength($text, $data['company'], ! empty($data['max']) ? $data['max'] : null)) {
                     if ($data['block_24'] && $this->blockPhone($receiver->id, $client['phone'])) {
-                        $phones[$client['phone']]['message'] = __('For the last '.$this->blockHours.' hours this phone number already received a text'); 
+                        $phones[$client['phone']]['message'] = __('For the last '.$this->blockHours.' hours this phone number already received a text');
                         $phones[$client['phone']]['finish'] = 1;
                     } else {
                         $response = Trumpia::sendText($client['phone'], $company->code, ' '.$text, $attachment);
@@ -204,13 +204,13 @@ class MessageController extends Controller
                     $update['success'] = false;
                 }
             }
-        } 
+        }
 
         if (empty($update['success'])) {
             if (empty($receiver->landline)) {
 
                 $texts = $this->createLandLineText($receiver->text, $receiver->company);
-                
+
                 foreach ($texts as $key => $text) {
                     $response = Trumpia::sendText($receiver->phone, $receiver->company, $text, $receiver->attachment, true);
                     $request_id = $response['data']['request_id'];
@@ -230,7 +230,7 @@ class MessageController extends Controller
                             sleep(1);
                         }
                     }
-                    
+
                     $update = [
                         'landline' => true,
                         'request_id' => $request_id,
